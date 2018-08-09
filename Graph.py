@@ -4,10 +4,8 @@
 # 图
 class Graph:
     def __init__(self, file):
-        # 顶点数目
         self.V = []
         self.adj = {}
-
         self.marker = {}
         self.toedge = {}
         self.loads(file)
@@ -25,18 +23,23 @@ class Graph:
         for v in self.V:
             self.marker[v] = False
 
+    # 深度优先
     def dfs(self, start):
         self.marker[start] = True
-        print(start)
 
-        for p in self.adj[start]:
-            if not self.marker[p]:
-                self.toedge[p] = start
-                self.dfs(p)
+        for v in self.adj[start]:
+            # 是否已记录, 未记录则继续搜索
+            if not self.marker[v]:
+                self.toedge[v] = start
+                self.dfs(v)
 
+    # 查找两点之间的路径
     def path(self, start, end):
-        path_list = [end]
+        # 先进行dfs, 获取所有能通向start的顶点
+        self.init_marker()
+        self.dfs(start)
 
+        path_list = [end]
         while self.toedge.get(end, None):
             path_list.append(self.toedge[end])
             end = self.toedge[end]
@@ -45,11 +48,15 @@ class Graph:
         return None
 
     def __repr__(self):
-        return '<Graph V:{}>\n' \
-               '<adj:{}>'.format(self.V, self.adj)
+        adj_message = ''
+        for key, value in self.adj.items():
+            adj_message += '{}:{}\n'.format(key, value)
+
+        return '<Graph>\n' \
+               'V:{}\n' \
+               '{}'.format(self.V, adj_message)
 
 
 g = Graph('src/graph_test.txt')
-g.init_marker()
-g.dfs('1')
-print(g.path('1', '7'))
+print(g)
+print(g.path('1', '4'))

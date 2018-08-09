@@ -2,7 +2,6 @@
 import sys
 sys.setrecursionlimit(1000000)
 
-import inspect
 import random
 import time
 from matplotlib import pyplot as plt
@@ -16,11 +15,11 @@ def GetRandomData(size=10, min=0, max=100):
     return ar
 
 
-# 测试
-def TestSort(test_func):
+# 测试, 返回测试规模和对应消耗的时间
+def TestSort(test_func, min_size, max_size, step):
     size_list = []
     time_list = []
-    for i in range(100, 10100, 100):
+    for i in range(min_size, max_size, step):
         ar = GetRandomData(i)
 
         start = time.time()
@@ -33,6 +32,7 @@ def TestSort(test_func):
     return size_list, time_list
 
 
+# 可视化测试函数返回的数据
 def PlotTestData(test_func, size_list, time_list, *args):
     print('all time: {}'.format(sum(time_list)))
     plt.subplot(*args)
@@ -42,6 +42,7 @@ def PlotTestData(test_func, size_list, time_list, *args):
     plt.plot(size_list, time_list)
 
 
+# 插入排序
 def InsertionSort(ar):
     for j in range(1, len(ar)):         # j从数组的第2个开始
         for i in range(0, j):           # i从数组的第1个开始, 但不能超过j
@@ -51,6 +52,7 @@ def InsertionSort(ar):
                 ar[i+1:j+1] = temp      # 并且将原来数组 ar[i] 到 ar[j-1] 的内容后移1个位置
 
 
+# 归并排序
 def MergeSort(ar):
     if len(ar) == 1:                    # 如果数组只有1个元素,返回
         return ar[0:1]
@@ -74,11 +76,11 @@ def MergeSort(ar):
     elif j < len(b):
         c += b[j:len(b)]
 
-    return c                            # 返回合并有序的数组
+    return c                            # 返回合并的有序的数组
 
 
 if __name__ == '__main__':
-    test_list = {'MergeSort':221, 'sorted': 222, 'InsertionSort':223}
+    test_list = {'MergeSort': 121, 'InsertionSort': 122}
 
     for key, value in test_list.items():
         test_func = eval(key)
