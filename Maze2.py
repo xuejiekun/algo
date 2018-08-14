@@ -6,6 +6,7 @@ import os
 import random
 import cv2
 import numpy as np
+from collections import deque
 from matplotlib import pyplot as plt
 
 
@@ -127,18 +128,31 @@ class Maze2:
         return edge_list, vertex_list
 
     # 添加点到集合, 并递归访问邻近的点(dfs)
-    def build(self, x=1, y=1):
+    def build_dfs(self, x=1, y=1):
         self.add_set(x, y)
         edge_list, vertex_list = self.get_edge_random(x, y)
 
         for e, v in zip(edge_list, vertex_list):
             if not self.in_set(v[0], v[1]):
                 self.break_it(e[0], e[1])
-                self.build(v[0], v[1])
+                self.build_dfs(v[0], v[1])
+
+    def build_bfs(self, x=1, y=1):
+        self.add_set(x, y)
+        node = list(zip(*self.get_edge_random(x, y)))
+
+        while node:
+            random.shuffle(node)
+            e, v = node.pop()
+
+            if not self.in_set(v[0], v[1]):
+                self.add_set(v[0], v[1])
+                self.break_it(e[0], e[1])
+                node += list(zip(*self.get_edge_random(v[0], v[1])))
 
     # 创建地图
     def build_map(self):
-        self.build()
+        self.build_bfs()
         self.break_it(self.START[0], self.START[1])
         self.break_it(self.END[0], self.END[1])
 
@@ -177,7 +191,8 @@ class Maze2:
 
 m = Maze2((21, 31))
 m.set_scale(15, 15)
-m.use_player()
+m.use_player(20)
 # m.use_recorder()
 m.build_map()
+m.show()
 m.play_map()
